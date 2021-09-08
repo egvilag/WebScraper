@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+import csv
 
 #Processing the main processor list
 intel_website = 'https://www.intel.com'
@@ -28,6 +29,7 @@ cpu_type_links = [intel_website + x for x in cpu_type_links]
 #Processing the individual Processor Type lists
 links = []
 for i in range(len(cpu_type_links)):
+    print('checking types:', cpu_type_links[i])
     html_text = requests.get(cpu_type_links[i]).text
     website = BeautifulSoup(html_text, 'lxml')
     panels = website.find_all(id = 'ps-accordion-panel-0')
@@ -44,6 +46,7 @@ for i in range(len(links)):
 #Processing the individual cpu types
 cpu_link = []
 for i in range(len(links)):
+    print('checking this cpu:', links[i])
     html_text = requests.get(links[i]).text
     website = BeautifulSoup(html_text, 'lxml')
     table = website.find('table', class_ = 'table table-sorter').tbody
@@ -51,23 +54,25 @@ for i in range(len(links)):
     for link in table.findAll('a', attrs={'href': re.compile("^/content/www/us/en/products/sku/")}):
         cpu_link.append(link.get('href'))
 
+
 #add intel website domain
 cpu_link = [intel_website + x for x in cpu_link]
 
-f = open("cpu_intel.txt", "w")
 #Processing every cpu's specs page
+rows = []
 for i in range(len(cpu_link)):
     html_text = requests.get(cpu_link[i]).text
     website = BeautifulSoup(html_text, 'lxml')
+    print("page:",cpu_link[i])
 
     for record in website.find_all(class_ = 'col-xs-6 col-lg-6 tech-label'):
-        f.write(record.text.replace('\n', '') + ';')
-
-    f.write('\n')
+        rows.append(record.text.replace('\n', '') + ';')
 
     for record in website.find_all(class_ = 'col-xs-6 col-lg-6 tech-data'):
-        f.write(record.text.replace('\n', '') + ';')
+        rows.append(record.text.replace('\n', '') + ';')
 
-    f.write('\n')
 
-f.close()
+with open('cpu_intel.csv', 'w') as csv_file:
+     write = csv.writer(csv_file)
+     for i in range(len(rows)):
+         write.writerow(rows[i])
