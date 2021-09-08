@@ -14,6 +14,7 @@ db_tbl_name = ''
 data = []
 line_count = 0
 with open(csv_file_name, 'r') as csv_file:
+    print('opening the csv file')
     csv_reader = csv.reader(csv_file)
     for row in csv_reader:
         if row:
@@ -24,6 +25,7 @@ with open(csv_file_name, 'r') as csv_file:
                 data.append(row)
 
 # connect to db with the provided info
+print('connecting to the db')
 db = mysql.connector.connect(
     host=db_ip,
     user=db_user,
@@ -40,13 +42,14 @@ db_cursor = db.cursor(dictionary=True, buffered=True)
 #db_cursor.execute("CREATE TABLE IF NOT EXISTS cpu_amd (id INT AUTO_INCREMENT PRIMARY KEY)")
 
 # uncomment these to set the headers in db table
-# for i in range(len(header)):
+#for i in range(len(header)):
 #    column_name = header[i]
 #    query = "ALTER TABLE cpu_amd ADD `{}` TEXT".format(column_name)
 #    db_cursor.execute(query)
 
 # processing the lists
 for i in range(len(data)):
+    print('reading this line:', i)
     column_name = header[0]
     value = data[i][0]
     query = "SELECT * FROM {} WHERE `{}` = '{}'".format(
@@ -61,20 +64,22 @@ for i in range(len(data)):
         found = "1"
         if found == "1":
             for row in (header):
+                print('updating row')
                 query = "UPDATE {} SET `{}` = '{}' WHERE `{}` = '{}'".format(
                     db_tbl_name, header[j], data[i][j], header[0], value)
                 j += 1
                 db_cursor.execute(query)
-                # db.commit()
     # if there isn't anything in db_cursor variable
     # commit the first element from the variable
     if found == 0:
+        print('inserting to the first column of the row')
         query = "INSERT INTO {} (`{}`) VALUES ('{}')".format(
             db_tbl_name, header[0], data[i][0])
         db_cursor.execute(query)
         db.commit()
         for row in (header):
-            query = "UPDATE '{}' SET `{}` = '{}' WHERE `{}` = '{}'".format(
+            print('updating row')
+            query = "UPDATE {} SET `{}` = '{}' WHERE `{}` = '{}'".format(
                 db_tbl_name, header[j], data[i][j], header[0], value)
             j += 1
             db_cursor.execute(query)
