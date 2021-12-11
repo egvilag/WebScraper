@@ -70,21 +70,23 @@ for i in range(len(cpu_link)):
     html_text = requests.get(cpu_link[i]).text
     website = BeautifulSoup(html_text, 'lxml')
     print("page:",cpu_link[i])
-    j=0
     for techSpec in website.find_all(class_ = 'row tech-section-row'):
         header = techSpec.find(class_ = 'col-xs-6 col-lg-6 tech-label').text.replace('\n', '')
+        
         if header not in headers:
             headers.append(header)
-        if headers[j] == header:
-            rows.append(techSpec.find(class_ = 'col-xs-6 col-lg-6 tech-data').text.replace('\n', ''))
-        else: rows.append('')
-        j = j + 1
-    
+            rows.append('')
+            
+        for j in range(len(headers)):
+            rows.append('')
+            
+        for j in range(len(headers)):
+            if headers[j] == header:
+                rows[j] = techSpec.find(class_ = 'col-xs-6 col-lg-6 tech-data').text.replace('\n', '')
+                
     data.append(rows)
-    rows = []
-
         
-print(data[0][2])
+    rows = []
 
 print('into csv')
 
