@@ -64,7 +64,7 @@ cpu_link = [intel_website + x for x in cpu_link]
 
 #Processing every cpu's specs page
 data = []
-header = []
+headers = []
 rows = []
 for i in range(len(cpu_link)):
     html_text = requests.get(cpu_link[i]).text
@@ -72,8 +72,9 @@ for i in range(len(cpu_link)):
     print("page:",cpu_link[i])
 
     for record in website.find_all(class_ = 'col-xs-6 col-lg-6 tech-label'):
-        header.append(record.text.replace('\n', ''))
-        print(record.text.replace('\n', ''))
+        header = record.text.replace('\n', '')
+        if header not in headers:
+            headers.append(header)
 
     for record in website.find_all(class_ = 'col-xs-6 col-lg-6 tech-data'):
         rows.append(record.text.replace('\n', ''))
@@ -85,6 +86,6 @@ print('into csv')
 
 with open('cpu_intel.csv', 'w', newline = '') as csv_file:
      write = csv.writer(csv_file)
-     write.writerow(header)
+     write.writerow(headers)
      for i in range(len(data)):
          write.writerow(data[i])
