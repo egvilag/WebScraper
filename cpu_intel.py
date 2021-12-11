@@ -13,19 +13,19 @@ website = BeautifulSoup(html_text, 'lxml')
 print('Processing intel.com')
 
 ps_accordion_panel_0 = website.find(id = 'ps-accordion-panel-0')
-##ps_accordion_panel_1 = website.find(id = 'ps-accordion-panel-1')
-##ps_accordion_panel_2 = website.find(id = 'ps-accordion-panel-2')
-##ps_accordion_panel_3 = website.find(id = 'ps-accordion-panel-3')
+ps_accordion_panel_1 = website.find(id = 'ps-accordion-panel-1')
+ps_accordion_panel_2 = website.find(id = 'ps-accordion-panel-2')
+ps_accordion_panel_3 = website.find(id = 'ps-accordion-panel-3')
 #ps_accordion_panel_4 = website.find(id = 'ps-accordion-panel-4')   #intel doesn't have multiple types of Pentium cpus
-##ps_accordion_panel_5 = website.find(id = 'ps-accordion-panel-5')
+ps_accordion_panel_5 = website.find(id = 'ps-accordion-panel-5')
 
 cpu_type_links = []
 cpu_type_links.append(ps_accordion_panel_0.find(class_ = 'group-title has-name').a['href'])
-##cpu_type_links.append(ps_accordion_panel_1.find(class_ = 'group-title has-name').a['href'])
-##cpu_type_links.append(ps_accordion_panel_2.find(class_ = 'group-title has-name').a['href'])
-##cpu_type_links.append(ps_accordion_panel_3.find(class_ = 'group-title has-name').a['href'])
+cpu_type_links.append(ps_accordion_panel_1.find(class_ = 'group-title has-name').a['href'])
+cpu_type_links.append(ps_accordion_panel_2.find(class_ = 'group-title has-name').a['href'])
+cpu_type_links.append(ps_accordion_panel_3.find(class_ = 'group-title has-name').a['href'])
 #cpu_type_links.append(ps_accordion_panel_4.find(class_ = 'group-title has-name').a['href'])    #intel doesn't have multiple types of Pentium cpus##
-##cpu_type_links.append(ps_accordion_panel_5.find(class_ = 'group-title has-name').a['href'])
+cpu_type_links.append(ps_accordion_panel_5.find(class_ = 'group-title has-name').a['href'])
 
 #add intel website domain
 cpu_type_links = [intel_website + x for x in cpu_type_links]
@@ -70,17 +70,21 @@ for i in range(len(cpu_link)):
     html_text = requests.get(cpu_link[i]).text
     website = BeautifulSoup(html_text, 'lxml')
     print("page:",cpu_link[i])
-
-    for record in website.find_all(class_ = 'col-xs-6 col-lg-6 tech-label'):
-        header = record.text.replace('\n', '')
+    j=0
+    for techSpec in website.find_all(class_ = 'row tech-section-row'):
+        header = techSpec.find(class_ = 'col-xs-6 col-lg-6 tech-label').text.replace('\n', '')
         if header not in headers:
             headers.append(header)
-
-    for record in website.find_all(class_ = 'col-xs-6 col-lg-6 tech-data'):
-        rows.append(record.text.replace('\n', ''))
+        if headers[j] == header:
+            rows.append(techSpec.find(class_ = 'col-xs-6 col-lg-6 tech-data').text.replace('\n', ''))
+        else: rows.append('')
+        j = j + 1
+    
     data.append(rows)
     rows = []
+
         
+print(data[0][2])
 
 print('into csv')
 
