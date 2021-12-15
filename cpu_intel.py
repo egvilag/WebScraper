@@ -77,16 +77,17 @@ for i in range(len(cpu_link)):
             headers.append(header)
             rows.append('')
             
-        for j in range(len(headers)):
-            rows.append('')
+
             
         for j in range(len(headers)):
             if headers[j] == header:
                 rows[j] = techSpec.find(class_ = 'col-xs-6 col-lg-6 tech-data').text.replace('\n', '')
-                
+    print(rows)    
     data.append(rows)
         
     rows = []
+    for j in range(len(headers)):
+        rows.append('')
 
 print('into csv')
 
